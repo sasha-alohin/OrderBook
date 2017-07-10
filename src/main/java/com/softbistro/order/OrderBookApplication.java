@@ -1,4 +1,4 @@
-package com.alexalokhin.order;
+package com.softbistro.order;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
