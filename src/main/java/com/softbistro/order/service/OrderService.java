@@ -10,7 +10,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.softbistro.order.Book;
+import com.softbistro.order.component.Book;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -28,7 +28,7 @@ public class OrderService {
 		JSONObject jsonBook;
 		JSONArray jsonArrayResult;
 		List<Book> books = new ArrayList<>();
-		List<Object> authorList = new ArrayList<>();
+		List<String> authorList = new ArrayList<>();
 		JSONArray authorJsonArray;
 		jsonText = readAll(URL_GET_CATALOG);
 		jsonArrayResult = new JSONArray(new JSONObject(jsonText).get("result").toString());
@@ -38,7 +38,7 @@ public class OrderService {
 		for (Object object : booksJson) {
 			jsonBook = new JSONObject(object.toString());
 			authorJsonArray = new JSONArray(jsonBook.get("authors").toString());
-			authorJsonArray.forEach(author -> authorList.add(author));
+			authorJsonArray.forEach(author -> authorList.add(author.toString()));
 			books.add(new Book(jsonBook.getString("id"), jsonBook.getString("title"), jsonBook.getString("isbn"),
 					jsonBook.getString("ean"), jsonBook.getString("imageUri"), authorList));
 		}

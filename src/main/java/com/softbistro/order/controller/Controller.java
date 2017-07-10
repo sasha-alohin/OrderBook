@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.softbistro.order.Book;
+import com.softbistro.order.component.Book;
 import com.softbistro.order.service.OrderService;
 
 @RestController
