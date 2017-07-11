@@ -14,6 +14,9 @@ import com.github.messenger4j.send.buttons.Button;
 import com.github.messenger4j.send.templates.GenericTemplate;
 import com.softbistro.order.component.Book;
 import com.softbistro.order.component.CatalogItem;
+import com.softbistro.order.component.Order;
+import com.softbistro.order.component.OrderItem;
+import com.softbistro.order.component.PriceItem;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -25,26 +28,49 @@ import com.sun.jersey.api.client.filter.GZIPContentEncodingFilter;
 public class OrderService {
 	@Value("${orders.url-for-catalog}")
 	private String URL_GET_CATALOG;
+	
+	private String URL_GET_PRICES = "http://demo5816308.mockable.io/catalog-api/rest/catalog/priced/byId/LBP-53235317";
+	private String URL_CREATE_ORDER= "http://demo5816308.mockable.io/order-api/rest/v3/cart/create";
 	private String jsonText;
 	private String urlForTemplate = "http://localhost:8080/template";
-
+	private final Integer userId= 317673305;
+	private static CatalogItem catalogItem;
 	
-	
-	public List<CatalogItem> getCatalogItems(){
+	public void createOrder(){
 		JSONObject jsonItem;
+		JSONObject jsonPrice;
 		JSONArray jsonArrayResult;
 		List<Book> books = new ArrayList<>();
 		List<String> authorList = new ArrayList<>();
 		JSONArray array;
-		jsonText = readAll(URL_GET_CATALOG);
-		jsonItem = new JSONObject(jsonText);
+		System.out.println(catalogItem);
+		List<OrderItem> items = new ArrayList<>();
+		items.add(new OrderItem(1,"COPS",catalogItem.getCatalogItemId(),"d5e53198-d6e8-435a-bd67-ed1b55ca42ff"));
+		Order order = new Order(items,userId);
+		jsonText = postToApi(URL_CREATE_ORDER, order);
 		System.out.println(jsonText);
-		return null;
 	}
 	
-	public void createOrder(CatalogItem item){
-		
+	public CatalogItem getCatalogItem(){
+		JSONObject jsonItem;
+		JSONObject jsonPrice;
+		JSONArray jsonArrayResult;
+		List<Book> books = new ArrayList<>();
+		List<String> authorList = new ArrayList<>();
+		JSONArray array;
+		jsonText = readAll(URL_GET_PRICES);
+		System.out.println(jsonText);
+		jsonItem = new JSONObject(new JSONArray(jsonText).get(0).toString());
+		array = new JSONArray(jsonItem.get("prices").toString());
+		List<PriceItem> prices = new ArrayList<>();
+		for (Object priceObject : array) {
+			jsonPrice = new JSONObject(priceObject.toString());
+			prices.add(new PriceItem(jsonPrice.getDouble("price"),jsonPrice.getString("logId")));
+		}
+		catalogItem =new CatalogItem(jsonItem.getString("catalogItemId"),jsonItem.getString("name"),prices); 
+		return catalogItem;
 	}
+	
 	public List<Book> getCatalog() {
 
 		JSONObject jsonBook;
@@ -61,8 +87,8 @@ public class OrderService {
 			jsonBook = new JSONObject(object.toString());
 			authorJsonArray = new JSONArray(jsonBook.get("authors").toString());
 			authorJsonArray.forEach(author -> authorList.add(author.toString()));
-			books.add(new Book(jsonBook.getString("id"), jsonBook.getString("title"), jsonBook.getString("isbn"),
-					jsonBook.getString("ean"), jsonBook.getString("imageUri"), authorList));
+//			books.add(new Book(jsonBook.getString("id"), jsonBook.getString("title"), jsonBook.getString("isbn"),
+//					jsonBook.getString("ean"), jsonBook.getString("imageUri"), authorList));
 		}
 		return books;
 	}
@@ -90,6 +116,25 @@ public class OrderService {
 //		return builder.build();
 //	}
 
+	
+	private String postToApi(String url,Object postObject){
+		Logger LOGGER = Logger.getLogger(OrderService.class);
+		String ERROR_MESSAGE = "Can't post to site source";
+		ClientConfig config = new DefaultClientConfig();
+		Client client = Client.create(config);
+		client.addFilter(new GZIPContentEncodingFilter(false));
+		String responseData = "";
+		try {
+			WebResource wr = client.resource(url);
+			ClientResponse response = wr
+				      .post(ClientResponse.class, postObject);
+			responseData = response.getEntity(String.class);
+			
+		} catch (Exception e) {
+			LOGGER.error(ERROR_MESSAGE);
+		}
+		return responseData;
+	}
 	/**
 	 * Read data from stream
 	 * 

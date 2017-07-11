@@ -7,12 +7,15 @@ import javax.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.messenger4j.send.templates.GenericTemplate;
 import com.softbistro.order.component.Book;
+import com.softbistro.order.component.CatalogItem;
+import com.softbistro.order.component.Order;
 import com.softbistro.order.service.OrderService;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandlerException;
@@ -32,7 +35,16 @@ public class Controller {
 	public List<Book> getCatalog() {
 		return service.getCatalog();
 	}
-
+	
+	
+	@RequestMapping(value = "/create", method = RequestMethod.POST, produces = "application/json")
+	public void createOrder(@RequestBody Order order) {
+		service.createOrder();
+	}
+	@RequestMapping(value = "/prices")
+	public CatalogItem getPrices() {
+		return service.getCatalogItem();
+	}
 	@RequestMapping(value = "/template", method = RequestMethod.GET, produces = "application/json")
 	public GenericTemplate getTemplate() {
 		return service.createTemplate(getCatalog());

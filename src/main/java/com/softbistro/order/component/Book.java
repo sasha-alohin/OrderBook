@@ -6,15 +6,13 @@ public class Book {
 	private String id;
 	private String title;
 	private String isbn;
-	private String ean;
 	private String imageUrl;
 	private List<String> authors;
 
-	public Book(String id, String title, String isbn, String ean, String imageUrl, List<String> authors) {
+	public Book(String id, String title, String isbn, String imageUrl, List<String> authors) {
 		this.id = id;
 		this.title = title;
 		this.isbn = isbn;
-		this.ean = ean;
 		this.imageUrl = imageUrl;
 		this.authors = authors;
 	}
@@ -25,14 +23,6 @@ public class Book {
 
 	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
-	}
-
-	public String getEan() {
-		return ean;
-	}
-
-	public void setEan(String ean) {
-		this.ean = ean;
 	}
 
 	public String getId() {
