@@ -6,17 +6,17 @@
   }],
   "properties": [
     {
-      "name": "orders.url-for-book",
-      "type": "java.lang.String",
-      "sourceType": "com.softbistro.order.configuration.BookApiConfiguration"
-    },
-    {
       "name": "orders.url-for-catalog",
       "type": "java.lang.String",
       "sourceType": "com.softbistro.order.configuration.BookApiConfiguration"
     },
     {
-      "name": "orders.url-for-rent",
+      "name": "orders.url-for-create-order",
+      "type": "java.lang.String",
+      "sourceType": "com.softbistro.order.configuration.BookApiConfiguration"
+    },
+    {
+      "name": "orders.url-for-prices",
       "type": "java.lang.String",
       "sourceType": "com.softbistro.order.configuration.BookApiConfiguration"
     }

@@ -6,18 +6,12 @@ public class Order {
 	private List<OrderItem> items;
 	private Integer userId;
 
-
 	public Order(List<OrderItem> items, Integer userId) {
 		this.items = items;
 		this.userId = userId;
 	}
 
 	public Order() {
-	}
-
-	@Override
-	public String toString() {
-		return "Order [items=" + items + ", userId=" + userId + "]";
 	}
 
 	public List<OrderItem> getItems() {

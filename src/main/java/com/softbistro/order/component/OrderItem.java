@@ -7,12 +7,6 @@ public class OrderItem {
 	private String pricingId;
 	private String catalogItemId;
 
-	@Override
-	public String toString() {
-		return "OrderItem [quatity=" + quatity + ", catalogItemSource=" + catalogItemSource + ", pricingId=" + pricingId
-				+ ", catalogItemId=" + catalogItemId + "]";
-	}
-
 	public OrderItem() {
 	}
 

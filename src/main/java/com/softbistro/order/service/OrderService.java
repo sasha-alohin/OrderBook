@@ -4,17 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.ws.rs.core.MediaType;
-
-import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.messenger4j.send.buttons.Button;
 import com.github.messenger4j.send.templates.GenericTemplate;
 import com.softbistro.order.component.Book;
+import com.softbistro.order.component.BookForOrder;
 import com.softbistro.order.component.CatalogItem;
 import com.softbistro.order.component.Order;
 import com.softbistro.order.component.OrderItem;
@@ -30,33 +30,27 @@ import com.sun.jersey.api.client.filter.GZIPContentEncodingFilter;
 public class OrderService {
 	@Value("${orders.url-for-catalog}")
 	private String URL_GET_CATALOG;
-
-	private String URL_GET_PRICES = "http://demo5816308.mockable.io/catalog-api/rest/catalog/priced/byId/LBP-53235317";
-	private String URL_CREATE_ORDER = "http://demo5816308.mockable.io/order-api/rest/v3/cart/create";
+	@Value("${orders.url-for-prices}")
+	private String URL_GET_PRICES = "";
+	@Value("${orders.url-for-create-order}")
+	private String URL_CREATE_ORDER = "";
 	private String jsonText;
-	private String urlForTemplate = "http://localhost:8080/template";
 	private final Integer userId = 317673305;
 	private static CatalogItem catalogItem;
-
-	public void createOrder() {
-		System.out.println(catalogItem);
+	private static Integer orderId;
+	private JSONObject jsonItem;
+	private JSONArray array;
+	public Integer createOrder(BookForOrder book) throws JsonProcessingException {
 		List<OrderItem> items = new ArrayList<>();
-		items.add(new OrderItem(1, "COPS", catalogItem.getCatalogItemId(), "d5e53198-d6e8-435a-bd67-ed1b55ca42ff"));
+		items.add(new OrderItem(1, "COPS", book.getCatalogItemId(), book.getPricingId()));
 		Order order = new Order(items, userId);
-		System.out.println(order);
-//		jsonText = postToApi(URL_CREATE_ORDER, order);
-		System.out.println(jsonText);
+		orderId = new JSONObject(postToApi(order)).getInt("id");
+		return orderId;
 	}
 
 	public CatalogItem getCatalogItem() {
-		JSONObject jsonItem;
 		JSONObject jsonPrice;
-		JSONArray jsonArrayResult;
-		List<Book> books = new ArrayList<>();
-		List<String> authorList = new ArrayList<>();
-		JSONArray array;
 		jsonText = readAll(URL_GET_PRICES);
-		System.out.println(jsonText);
 		jsonItem = new JSONObject(new JSONArray(jsonText).get(0).toString());
 		array = new JSONArray(jsonItem.get("prices").toString());
 		List<PriceItem> prices = new ArrayList<>();
@@ -69,60 +63,30 @@ public class OrderService {
 	}
 
 	public List<Book> getCatalog() {
-
-		JSONObject jsonBook;
-		JSONArray jsonArrayResult;
 		List<Book> books = new ArrayList<>();
 		List<String> authorList = new ArrayList<>();
 		JSONArray authorJsonArray;
 		jsonText = readAll(URL_GET_CATALOG);
-		jsonArrayResult = new JSONArray(new JSONObject(jsonText).get("result").toString());
+		array = new JSONArray(new JSONObject(jsonText).get("result").toString());
 		JSONArray booksJson = new JSONArray(new JSONObject(
-				new JSONObject(new JSONObject(jsonArrayResult.get(0).toString()).get("tbs-book").toString())
+				new JSONObject(new JSONObject(array.get(0).toString()).get("tbs-book").toString())
 						.get("responseContent").toString()).get("docs").toString());
 		for (Object object : booksJson) {
-			jsonBook = new JSONObject(object.toString());
-			authorJsonArray = new JSONArray(jsonBook.get("authors").toString());
+			jsonItem = new JSONObject(object.toString());
+			authorJsonArray = new JSONArray(jsonItem.get("authors").toString());
 			authorJsonArray.forEach(author -> authorList.add(author.toString()));
-			// books.add(new Book(jsonBook.getString("id"),
-			// jsonBook.getString("title"), jsonBook.getString("isbn"),
-			// jsonBook.getString("ean"), jsonBook.getString("imageUri"),
-			// authorList));
+			books.add(new Book(jsonItem.getString("id"), jsonItem.getString("title"), jsonItem.getString("isbn"),
+					jsonItem.getString("ean"), jsonItem.getString("imageUri"), authorList));
 		}
 		return books;
 	}
 
-	// public GenericTemplate createTemplate() {
-	// ListBuilder buttonBuilder;
-	// jsonText = readAll(urlForTemplate);
-	// System.out.println(jsonText);
-	// Builder builder = GenericTemplate.newBuilder();
-	// JSONArray books = new JSONArray(new
-	// JSONObject(jsonText).getJSONArray("elements").toString());
-	// for (Object object : books) {
-	//// List<Button> buttons = new ;
-	// buttonBuilder = Button.newListBuilder();
-	// JSONObject json = new JSONObject(object.toString());
-	// JSONArray buttonsArray = json.getJSONArray("buttons");
-	// for (Object objectButton : buttonsArray) {
-	// JSONObject buttonJson = new JSONObject(objectButton.toString());
-	// buttons.addAll(buttonBuilder.addUrlButton(buttonJson.getString("title"),
-	// buttonJson.getString("url"))
-	// .toList().build());
-	// }
-	// builder.addElements().addElement(json.getString("title")).subtitle(json.getString("subtitle"))
-	// .itemUrl(json.getString("itemUrl")).imageUrl(json.getString("imageUrl")).buttons(buttons);
-	//
-	// }
-	// return builder.build();
-	// }
-
-	public String postToApi() {
+	public String postToApi(Order order) throws JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
+		jsonText = mapper.writeValueAsString(order);
 		Client client = Client.create();
-		String input = "{\"singer\":\"Metallica\",\"title\":\"Fade To Black\"}";
 		WebResource webResource = client.resource(URL_CREATE_ORDER);
-		ClientResponse response = webResource.type("application/json")
-				   .post(ClientResponse.class, input);
+		ClientResponse response = webResource.type("application/json").post(ClientResponse.class, jsonText);
 		String output = response.getEntity(String.class);
 		return output;
 	}
@@ -135,23 +99,18 @@ public class OrderService {
 	 * @return data from stream
 	 */
 	private String readAll(String url) {
-		Logger LOGGER = Logger.getLogger(OrderService.class);
-		String ERROR_MESSAGE = "Can't read from site source";
 		ClientConfig config = new DefaultClientConfig();
 		Client client = Client.create(config);
 		client.addFilter(new GZIPContentEncodingFilter(false));
-		String responseData = "";
 		try {
 			WebResource wr = client.resource(url);
 			ClientResponse response = null;
 			response = wr.get(ClientResponse.class);
-			responseData = response.getEntity(String.class);
+			jsonText = response.getEntity(String.class);
 
 		} catch (Exception e) {
-			LOGGER.error(ERROR_MESSAGE);
 		}
-
-		return responseData;
+		return jsonText;
 	}
 
 	public GenericTemplate createTemplate(List<Book> books) {

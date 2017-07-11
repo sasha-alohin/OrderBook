@@ -5,8 +5,6 @@ public class PriceItem {
 	private Double price;
 	private String logId;
 
-	
-	
 	public PriceItem(Double price, String logId) {
 		this.price = price;
 		this.logId = logId;

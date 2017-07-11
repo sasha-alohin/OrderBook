@@ -14,25 +14,31 @@ import org.springframework.context.annotation.Configuration;
 public class BookApiConfiguration {
 
 	private String urlForCatalog;
-	private String urlForBook;
-	private String urlForRent;
+	private String urlForPrices;
+	private String urlForCreateOrder;
+
 	public String getUrlForCatalog() {
 		return urlForCatalog;
 	}
+
 	public void setUrlForCatalog(String urlForCatalog) {
 		this.urlForCatalog = urlForCatalog;
 	}
-	public String getUrlForBook() {
-		return urlForBook;
+
+	public String getUrlForPrices() {
+		return urlForPrices;
 	}
-	public void setUrlForBook(String urlForBook) {
-		this.urlForBook = urlForBook;
+
+	public void setUrlForPrices(String urlForPrices) {
+		this.urlForPrices = urlForPrices;
 	}
-	public String getUrlForRent() {
-		return urlForRent;
+
+	public String getUrlForCreateOrder() {
+		return urlForCreateOrder;
 	}
-	public void setUrlForRent(String urlForRent) {
-		this.urlForRent = urlForRent;
+
+	public void setUrlForCreateOrder(String urlForCreateOrder) {
+		this.urlForCreateOrder = urlForCreateOrder;
 	}
-	
+
 }

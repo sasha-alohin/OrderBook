@@ -13,11 +13,6 @@ public class CatalogItem {
 		this.prices = prices;
 	}
 
-	@Override
-	public String toString() {
-		return "CatalogItem [catalogItemId=" + catalogItemId + ", name=" + name + ", prices=" + prices + "]";
-	}
-
 	public String getCatalogItemId() {
 		return catalogItemId;
 	}
