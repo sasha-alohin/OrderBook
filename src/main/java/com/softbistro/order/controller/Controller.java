@@ -33,8 +33,13 @@ public class Controller {
 	}
 
 	@RequestMapping(value = "/firstEvaluateCheckout", method = RequestMethod.POST, produces = "application/json")
-	public void firstEvaluateCheckout(@RequestBody BookForOrder book) throws JsonProcessingException {
-		service.firstEvaluateCheckout(book);
+	public String firstEvaluateCheckout(@RequestBody BookForOrder book) throws JsonProcessingException {
+		return service.firstEvaluateCheckout(book);
+	}
+	
+	@RequestMapping(value = "/setShippingOpt", method = RequestMethod.POST, produces = "application/json")
+	public void setShippingOptions(@RequestBody BookForOrder book) throws JsonProcessingException {
+		service.setShippingOptions();
 	}
 
 	@RequestMapping(value = "/catalog/{searchQuery}", method = RequestMethod.GET, produces = "application/json")

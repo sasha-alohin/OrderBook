@@ -28,6 +28,7 @@ import com.sun.jersey.api.client.filter.GZIPContentEncodingFilter;
 
 @Service
 public class OrderService {
+	
 	@Value("${orders.url-for-catalog}")
 	private String URL_GET_CATALOG;
 	@Value("${orders.url-for-prices}")
@@ -47,6 +48,9 @@ public class OrderService {
 	private static Integer orderId;
 	private JSONObject jsonItem;
 	private JSONArray array;
+	private static String shippingChoiceHash;
+	
+	
 	private String checkoutFirstList = "{\"namespace\": \"billing_address\",\"key\": \"fname\",\"value\": \"John\"},\n"
 			+ "  {\"namespace\": \"billing_address\",\"key\": \"lname\",\"value\": \"Douh\"},\n"
 			+ "  {\"namespace\": \"billing_address\",\"key\": \"line1\",\"value\": \"1079 Seacoast Dr\"},\n"
@@ -70,6 +74,9 @@ public class OrderService {
 			+ "	\"calculate_taxes\", \n" + "	\"can_fulfill\", \n" + "	\"confirm_checkout\", \n"
 			+ "	\"payment_authorize_v3\",\n" + "	\"assign_order_key\",                     \n"
 			+ "	\"expand_quantities\"\n" + "]";
+	private String setShippingOptions = "[\n"
+			+ "  { \"namespace\":\"shipping_choices1\", \"key\":\"option_chosen\", \"value\":\"{{shipping_choice_hash}}\" }\n"
+			+ "]";
 
 	public void zeroCheckout(BookForOrder book) throws JsonProcessingException {
 		postToApi(checkoutZeroList, URL_ZERO_CHECKOUT + book.getOrderId() + "/CHECKOUTV3");
@@ -78,8 +85,18 @@ public class OrderService {
 	public void firstCheckout(BookForOrder book) throws JsonProcessingException {
 		postToApi(checkoutFirstList, URL_FIRST_CHECKOUT + book.getOrderId() + "/CHECKOUTV3");
 	}
-	public void firstEvaluateCheckout(BookForOrder book) throws JsonProcessingException {
-		postToApi(null, URL_FIRST_EVALUATE_CHECKOUT + book.getOrderId() + "/CHECKOUTV3");
+
+	public String firstEvaluateCheckout(BookForOrder book) throws JsonProcessingException {
+		jsonItem = new JSONObject(
+				new JSONObject(postToApi(null, URL_FIRST_EVALUATE_CHECKOUT + book.getOrderId() + "/CHECKOUTV3"))
+						.getJSONObject("data"));
+		shippingChoiceHash = jsonItem.getString("shipping_choices1.option1-hash");
+		return shippingChoiceHash;
+	}
+
+	public void setShippingOptions() throws JsonProcessingException {
+		postToApi(setShippingOptions + shippingChoiceHash + "}\n" + 
+				"]", URL_FIRST_CHECKOUT);
 	}
 
 	public Integer createOrder(BookForOrder book) throws JsonProcessingException {
@@ -108,7 +125,7 @@ public class OrderService {
 		List<Book> books = new ArrayList<>();
 		List<String> authorList = new ArrayList<>();
 		JSONArray authorJsonArray;
-		jsonText = readAll(URL_GET_CATALOG+searchQuery);
+		jsonText = readAll(URL_GET_CATALOG + searchQuery);
 		array = new JSONArray(new JSONObject(jsonText).get("result").toString());
 		JSONArray booksJson = new JSONArray(
 				new JSONObject(new JSONObject(new JSONObject(array.get(0).toString()).get("tbs-book").toString())
