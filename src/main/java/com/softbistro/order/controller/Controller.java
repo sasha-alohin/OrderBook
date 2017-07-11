@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.messenger4j.send.templates.GenericTemplate;
-import com.softbistro.order.Book;
+import com.softbistro.order.component.Book;
 import com.softbistro.order.service.OrderService;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandlerException;

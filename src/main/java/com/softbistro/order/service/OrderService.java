@@ -13,7 +13,8 @@ import org.springframework.stereotype.Service;
 
 import com.github.messenger4j.send.buttons.Button;
 import com.github.messenger4j.send.templates.GenericTemplate;
-import com.softbistro.order.Book;
+
+import com.softbistro.order.component.Book;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -74,31 +75,37 @@ public class OrderService {
 
 		return responseData;
 	}
-	
-	public GenericTemplate createTemplate(List<Book> books){
-		
+
+	public GenericTemplate createTemplate(List<Book> books) {
+
 		final List<Button> firstLink = Button.newListBuilder()
-				.addUrlButton("Biology 12th edition", "http://www.chegg.com/textbooks/biology-12th-edition-9780078024269-0078024269?trackid=1f854400&strackid=4a41bf08&ii=1").toList().build();
+				.addUrlButton("Biology 12th edition",
+						"http://www.chegg.com/textbooks/biology-12th-edition-9780078024269-0078024269?trackid=1f854400&strackid=4a41bf08&ii=1")
+				.toList().build();
 		final List<Button> secondLink = Button.newListBuilder()
-				.addUrlButton("Biology 12th edition", "http://www.chegg.com/textbooks/biology-12th-edition-9780078024269-0078024269?trackid=1f854400&strackid=4a41bf08&ii=1").toList().build();
+				.addUrlButton("Biology 12th edition",
+						"http://www.chegg.com/textbooks/biology-12th-edition-9780078024269-0078024269?trackid=1f854400&strackid=4a41bf08&ii=1")
+				.toList().build();
 		final List<Button> thirdLink = Button.newListBuilder()
-				.addUrlButton("Biology 12th edition", "http://www.chegg.com/textbooks/biology-12th-edition-9780078024269-0078024269?trackid=1f854400&strackid=4a41bf08&ii=1").toList().build();
-				
+				.addUrlButton("Biology 12th edition",
+						"http://www.chegg.com/textbooks/biology-12th-edition-9780078024269-0078024269?trackid=1f854400&strackid=4a41bf08&ii=1")
+				.toList().build();
+
 		String authors1 = books.get(0).getAuthors().get(0).toString();
 		String authors2 = books.get(1).getAuthors().get(0).toString();
 		String authors3 = books.get(2).getAuthors().get(0).toString();
-		
+
 		books.stream().limit(4).collect(Collectors.toList());
-		
+
 		final GenericTemplate genericTemplate = GenericTemplate.newBuilder().addElements()
-				.addElement(books.get(0).getTitle()).subtitle("Authors " + authors1).itemUrl("http://www.chegg.com/books")
-				.imageUrl(books.get(0).getImageUrl()).buttons(firstLink)
-				.toList().addElement(books.get(1).getTitle()).subtitle("Authors " + authors2).itemUrl("http://www.chegg.com/books")
-				.imageUrl(books.get(1).getImageUrl()).buttons(secondLink)
-				.toList().addElement(books.get(2).getTitle()).subtitle("Authors " + authors3).itemUrl("http://www.chegg.com/books")
-				.imageUrl(books.get(2).getImageUrl()).buttons(thirdLink)
-				.toList().done().build();
-		
+				.addElement(books.get(0).getTitle()).subtitle("Authors " + authors1)
+				.itemUrl("http://www.chegg.com/books").imageUrl(books.get(0).getImageUrl()).buttons(firstLink).toList()
+				.addElement(books.get(1).getTitle()).subtitle("Authors " + authors2)
+				.itemUrl("http://www.chegg.com/books").imageUrl(books.get(1).getImageUrl()).buttons(secondLink).toList()
+				.addElement(books.get(2).getTitle()).subtitle("Authors " + authors3)
+				.itemUrl("http://www.chegg.com/books").imageUrl(books.get(2).getImageUrl()).buttons(thirdLink).toList()
+				.done().build();
+
 		return genericTemplate;
 	}
 }

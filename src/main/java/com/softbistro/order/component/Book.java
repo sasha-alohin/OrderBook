@@ -1,4 +1,4 @@
-package com.softbistro.order;
+package com.softbistro.order.component;
 
 import java.util.List;
 
