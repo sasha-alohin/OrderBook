@@ -2,7 +2,6 @@ package com.softbistro.order.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
@@ -13,8 +12,8 @@ import org.springframework.stereotype.Service;
 
 import com.github.messenger4j.send.buttons.Button;
 import com.github.messenger4j.send.templates.GenericTemplate;
-
 import com.softbistro.order.component.Book;
+import com.softbistro.order.component.CatalogItem;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -26,9 +25,28 @@ import com.sun.jersey.api.client.filter.GZIPContentEncodingFilter;
 public class OrderService {
 	@Value("${orders.url-for-catalog}")
 	private String URL_GET_CATALOG;
+	private String jsonText;
+	private String urlForTemplate = "http://localhost:8080/template";
 
+	
+	
+	public List<CatalogItem> getCatalogItems(){
+		JSONObject jsonItem;
+		JSONArray jsonArrayResult;
+		List<Book> books = new ArrayList<>();
+		List<String> authorList = new ArrayList<>();
+		JSONArray array;
+		jsonText = readAll(URL_GET_CATALOG);
+		jsonItem = new JSONObject(jsonText);
+		System.out.println(jsonText);
+		return null;
+	}
+	
+	public void createOrder(CatalogItem item){
+		
+	}
 	public List<Book> getCatalog() {
-		String jsonText;
+
 		JSONObject jsonBook;
 		JSONArray jsonArrayResult;
 		List<Book> books = new ArrayList<>();
@@ -48,6 +66,29 @@ public class OrderService {
 		}
 		return books;
 	}
+
+//	public GenericTemplate createTemplate() {
+//		ListBuilder buttonBuilder;
+//		jsonText = readAll(urlForTemplate);
+//		System.out.println(jsonText);
+//		Builder builder = GenericTemplate.newBuilder();
+//		JSONArray books = new JSONArray(new JSONObject(jsonText).getJSONArray("elements").toString());
+//		for (Object object : books) {
+////			List<Button> buttons = new ;
+//			buttonBuilder = Button.newListBuilder();
+//			JSONObject json = new JSONObject(object.toString());
+//			JSONArray buttonsArray = json.getJSONArray("buttons");
+//			for (Object objectButton : buttonsArray) {
+//				JSONObject buttonJson = new JSONObject(objectButton.toString());
+//				buttons.addAll(buttonBuilder.addUrlButton(buttonJson.getString("title"), buttonJson.getString("url"))
+//						.toList().build());
+//			}
+//			builder.addElements().addElement(json.getString("title")).subtitle(json.getString("subtitle"))
+//					.itemUrl(json.getString("itemUrl")).imageUrl(json.getString("imageUrl")).buttons(buttons);
+//
+//		}
+//		return builder.build();
+//	}
 
 	/**
 	 * Read data from stream

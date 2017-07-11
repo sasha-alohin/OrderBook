@@ -37,7 +37,6 @@ public class Controller {
 	public GenericTemplate getTemplate() {
 		return service.createTemplate(getCatalog());
 	}
-
 	@RequestMapping(value = "/", method = RequestMethod.GET, produces = "application/json")
 	public String get() {
 		/*GenericTemplate genericTemplate = Client.create().resource("http://localhost:8080/template").get(new GenericType<GenericTemplate>() {
