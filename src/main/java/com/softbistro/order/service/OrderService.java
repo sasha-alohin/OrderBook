@@ -87,10 +87,13 @@ public class OrderService {
 	}
 
 	public String firstEvaluateCheckout(BookForOrder book) throws JsonProcessingException {
+		jsonText = postToApi(null, URL_FIRST_EVALUATE_CHECKOUT + book.getOrderId() + "/CHECKOUTV3");
+		System.out.println(jsonText);
 		jsonItem = new JSONObject(
-				new JSONObject(postToApi(null, URL_FIRST_EVALUATE_CHECKOUT + book.getOrderId() + "/CHECKOUTV3"))
-						.getJSONObject("data"));
+				new JSONObject(jsonText)
+						.getJSONObject("data").toString());
 		shippingChoiceHash = jsonItem.getString("shipping_choices1.option1-hash");
+		System.out.println(shippingChoiceHash);
 		return shippingChoiceHash;
 	}
 
