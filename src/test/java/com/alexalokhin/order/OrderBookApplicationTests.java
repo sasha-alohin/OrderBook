@@ -1,4 +1,4 @@
-package com.alexalokhin.order;
+/*package com.alexalokhin.order;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,3 +14,4 @@ public class OrderBookApplicationTests {
 	}
 
 }
+*/

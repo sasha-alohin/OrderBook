@@ -8,9 +8,9 @@ public class Book {
 	private String isbn;
 	private String ean;
 	private String imageUrl;
-	private List<Object> authors;
+	private List<String> authors;
 
-	public Book(String id, String title, String isbn, String ean, String imageUrl, List<Object> authors) {
+	public Book(String id, String title, String isbn, String ean, String imageUrl, List<String> authors) {
 		this.id = id;
 		this.title = title;
 		this.isbn = isbn;
@@ -59,11 +59,11 @@ public class Book {
 		this.isbn = isbn;
 	}
 
-	public List<Object> getAuthors() {
+	public List<String> getAuthors() {
 		return authors;
 	}
 
-	public void setAuthors(List<Object> authors) {
+	public void setAuthors(List<String> authors) {
 		this.authors = authors;
 	}
 
