@@ -38,10 +38,10 @@ public class Controller {
 	
 	
 	@RequestMapping(value = "/create", method = RequestMethod.POST, produces = "application/json")
-	public void createOrder(@RequestBody Order order) {
-		service.createOrder();
+	public void createOrder() {
+		service.postToApi();
 	}
-	@RequestMapping(value = "/prices")
+	@RequestMapping(value = "/price",method = RequestMethod.GET, produces = "application/json")
 	public CatalogItem getPrices() {
 		return service.getCatalogItem();
 	}
