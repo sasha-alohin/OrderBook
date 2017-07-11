@@ -28,7 +28,7 @@ import com.sun.jersey.api.client.filter.GZIPContentEncodingFilter;
 
 @Service
 public class OrderService {
-	
+
 	@Value("${orders.url-for-catalog}")
 	private String URL_GET_CATALOG;
 	@Value("${orders.url-for-prices}")
@@ -49,8 +49,7 @@ public class OrderService {
 	private JSONObject jsonItem;
 	private JSONArray array;
 	private static String shippingChoiceHash;
-	
-	
+
 	private String checkoutFirstList = "{\"namespace\": \"billing_address\",\"key\": \"fname\",\"value\": \"John\"},\n"
 			+ "  {\"namespace\": \"billing_address\",\"key\": \"lname\",\"value\": \"Douh\"},\n"
 			+ "  {\"namespace\": \"billing_address\",\"key\": \"line1\",\"value\": \"1079 Seacoast Dr\"},\n"
@@ -88,18 +87,17 @@ public class OrderService {
 
 	public String firstEvaluateCheckout(BookForOrder book) throws JsonProcessingException {
 		jsonText = postToApi(null, URL_FIRST_EVALUATE_CHECKOUT + book.getOrderId() + "/CHECKOUTV3");
-		System.out.println(jsonText);
-		jsonItem = new JSONObject(
-				new JSONObject(jsonText)
-						.getJSONObject("data").toString());
+		jsonItem = new JSONObject(new JSONObject(jsonText).getJSONObject("data").toString());
 		shippingChoiceHash = jsonItem.getString("shipping_choices1.option1-hash");
-		System.out.println(shippingChoiceHash);
 		return shippingChoiceHash;
 	}
 
+	public void lastEvaluateCheckout(BookForOrder book) throws JsonProcessingException {
+		postToApi(null, URL_FIRST_EVALUATE_CHECKOUT + book.getOrderId() + "/CHECKOUTV3");
+	}
+
 	public void setShippingOptions() throws JsonProcessingException {
-		postToApi(setShippingOptions + shippingChoiceHash + "}\n" + 
-				"]", URL_FIRST_CHECKOUT);
+		postToApi(setShippingOptions + shippingChoiceHash + "}\n" + "]", URL_FIRST_CHECKOUT);
 	}
 
 	public Integer createOrder(BookForOrder book) throws JsonProcessingException {

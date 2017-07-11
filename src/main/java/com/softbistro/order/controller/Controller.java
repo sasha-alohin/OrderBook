@@ -22,6 +22,11 @@ public class Controller {
 	@Autowired
 	private OrderService service;
 
+	@RequestMapping(value = "/lastCheckout", method = RequestMethod.POST, produces = "application/json")
+	public void lastCheckout(@RequestBody BookForOrder book) throws JsonProcessingException {
+		service.lastEvaluateCheckout(book);
+	}
+	
 	@RequestMapping(value = "/zeroCheckout", method = RequestMethod.POST, produces = "application/json")
 	public void zeroCheckout(@RequestBody BookForOrder book) throws JsonProcessingException {
 		service.zeroCheckout(book);
