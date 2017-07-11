@@ -3,6 +3,7 @@ package com.softbistro.order.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,23 +22,29 @@ public class Controller {
 	@Autowired
 	private OrderService service;
 
-	@RequestMapping(value = "/catalog")
-	public List<Book> getCatalog() {
-		return service.getCatalog();
+	@RequestMapping(value = "/zeroCheckout", method = RequestMethod.POST, produces = "application/json")
+	public void zeroCheckout(@RequestBody BookForOrder book) throws JsonProcessingException {
+		service.zeroCheckout(book);
 	}
-	
-	
+
+	@RequestMapping(value = "/catalog/{searchQuery}", method = RequestMethod.GET, produces = "application/json")
+	public List<Book> getCatalog(@PathVariable("searchQuery") String searchQuery) {
+		return service.getCatalog(searchQuery);
+	}
+
 	@RequestMapping(value = "/createOrder", method = RequestMethod.POST, produces = "application/json")
 	public Integer createOrder(@RequestBody BookForOrder book) throws JsonProcessingException {
 		return service.createOrder(book);
 	}
-	@RequestMapping(value = "/prices",method = RequestMethod.GET, produces = "application/json")
-	public CatalogItem getPrices() {
-		return service.getCatalogItem();
+
+	@RequestMapping(value = "/prices/{catalogItemId}", method = RequestMethod.GET, produces = "application/json")
+	public CatalogItem getPrices(@PathVariable("catalogItemId") String catalogItemId) {
+		return service.getCatalogItem(catalogItemId);
 	}
-	@RequestMapping(value = "/template", method = RequestMethod.GET, produces = "application/json")
-	public GenericTemplate getTemplate() {
-		return service.createTemplate(getCatalog());
+
+	@RequestMapping(value = "/template/{catalogItemId}", method = RequestMethod.GET, produces = "application/json")
+	public GenericTemplate getTemplate(@PathVariable("searchQuery") String searchQuery) {
+		return service.createTemplate(getCatalog(searchQuery));
 	}
 
 }
