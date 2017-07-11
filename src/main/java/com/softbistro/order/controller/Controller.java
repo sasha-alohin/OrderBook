@@ -27,6 +27,16 @@ public class Controller {
 		service.zeroCheckout(book);
 	}
 
+	@RequestMapping(value = "/firstCheckout", method = RequestMethod.POST, produces = "application/json")
+	public void firstCheckout(@RequestBody BookForOrder book) throws JsonProcessingException {
+		service.firstCheckout(book);
+	}
+
+	@RequestMapping(value = "/firstEvaluateCheckout", method = RequestMethod.POST, produces = "application/json")
+	public void firstEvaluateCheckout(@RequestBody BookForOrder book) throws JsonProcessingException {
+		service.firstEvaluateCheckout(book);
+	}
+
 	@RequestMapping(value = "/catalog/{searchQuery}", method = RequestMethod.GET, produces = "application/json")
 	public List<Book> getCatalog(@PathVariable("searchQuery") String searchQuery) {
 		return service.getCatalog(searchQuery);

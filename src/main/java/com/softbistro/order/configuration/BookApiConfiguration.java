@@ -18,6 +18,15 @@ public class BookApiConfiguration {
 	private String urlForCreateOrder;
 	private String urlForFirstCheckout;
 	private String urlForZeroCheckout;
+	private String urlForFirstEvaluateCheckout;
+
+	public String getUrlForFirstEvaluateCheckout() {
+		return urlForFirstEvaluateCheckout;
+	}
+
+	public void setUrlForFirstEvaluateCheckout(String urlForFirstEvaluateCheckout) {
+		this.urlForFirstEvaluateCheckout = urlForFirstEvaluateCheckout;
+	}
 
 	public String getUrlForZeroCheckout() {
 		return urlForZeroCheckout;

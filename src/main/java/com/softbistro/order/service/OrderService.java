@@ -38,6 +38,8 @@ public class OrderService {
 	private String URL_FIRST_CHECKOUT;
 	@Value("${orders.url-for-zero-checkout}")
 	private String URL_ZERO_CHECKOUT;
+	@Value("${orders.url-for-first-evaluate-checkout}")
+	private String URL_FIRST_EVALUATE_CHECKOUT;
 
 	private String jsonText;
 	private final Integer userId = 317673305;
@@ -73,9 +75,11 @@ public class OrderService {
 		postToApi(checkoutZeroList, URL_ZERO_CHECKOUT + book.getOrderId() + "/CHECKOUTV3");
 	}
 
-	public void first(BookForOrder book) throws JsonProcessingException {
-
+	public void firstCheckout(BookForOrder book) throws JsonProcessingException {
 		postToApi(checkoutFirstList, URL_FIRST_CHECKOUT + book.getOrderId() + "/CHECKOUTV3");
+	}
+	public void firstEvaluateCheckout(BookForOrder book) throws JsonProcessingException {
+		postToApi(null, URL_FIRST_EVALUATE_CHECKOUT + book.getOrderId() + "/CHECKOUTV3");
 	}
 
 	public Integer createOrder(BookForOrder book) throws JsonProcessingException {

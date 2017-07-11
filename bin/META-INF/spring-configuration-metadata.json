@@ -21,6 +21,11 @@
       "sourceType": "com.softbistro.order.configuration.BookApiConfiguration"
     },
     {
+      "name": "orders.url-for-first-evaluate-checkout",
+      "type": "java.lang.String",
+      "sourceType": "com.softbistro.order.configuration.BookApiConfiguration"
+    },
+    {
       "name": "orders.url-for-prices",
       "type": "java.lang.String",
       "sourceType": "com.softbistro.order.configuration.BookApiConfiguration"
