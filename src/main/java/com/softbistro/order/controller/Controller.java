@@ -57,7 +57,7 @@ public class Controller {
 		return service.createOrder(book);
 	}
 	
-	@RequestMapping(value = "/addItem", method = RequestMethod.POST, produces = "application/json")
+	@RequestMapping(value = "/addItem", method = RequestMethod.PUT, produces = "application/json")
 	public void addItem(@RequestBody BookForOrder book) throws JsonProcessingException {
 		 service.addItem(book);
 	}
