@@ -113,7 +113,7 @@ public class OrderService {
 	}
 
 	public void addItem(BookForOrder book) throws JsonProcessingException {
-		LOGGER.info(postToApiString(
+		LOGGER.info(putToApiString(
 				"[  {    \"catalogItemId\": \"" + book.getCatalogItemId() + "\",    \"pricingId\": \""
 						+ book.getPricingId() + "\",    \"quantity\": " + book.getQuantity() + "  }]",
 				URL_ADD_ITEM + book.getOrderId()));
@@ -171,6 +171,15 @@ public class OrderService {
 		return response.getEntity(String.class);
 	}
 
+	public String putToApiString(String body, String url) throws JsonProcessingException {
+		Client client = Client.create();
+		WebResource webResource = client.resource(url);
+		ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).type(MediaType.APPLICATION_JSON)
+				.put(ClientResponse.class, body);
+
+		return response.getEntity(String.class);
+	}
+	
 	public String postToApiString(String body, String url) throws JsonProcessingException {
 		Client client = Client.create();
 		WebResource webResource = client.resource(url);
