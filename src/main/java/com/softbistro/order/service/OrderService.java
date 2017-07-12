@@ -48,20 +48,33 @@ public class OrderService {
 	private JSONArray array;
 	private static String shippingChoiceHash;
 
-	private String checkoutFirstList = "{\"namespace\": \"billing_address\",\"key\": \"fname\",\"value\": \"John\"},\n"
-			+ "  {\"namespace\": \"billing_address\",\"key\": \"lname\",\"value\": \"Douh\"},\n"
-			+ "  {\"namespace\": \"billing_address\",\"key\": \"line1\",\"value\": \"1079 Seacoast Dr\"},\n"
-			+ "  {\"namespace\": \"billing_address\",\"key\": \"line2\",\"value\": \"\"},\n"
-			+ "  {\"namespace\": \"billing_address\",\"key\": \"city\",\"value\": \"San Diego\"},\n"
-			+ "  {\"namespace\": \"billing_address\",\"key\": \"state\",\"value\": \"CA\"},\n"
-			+ "  {\"namespace\": \"billing_address\",\"key\": \"country\",\"value\": \"US\"},\n"
-			+ "  {\"namespace\": \"billing_address\",\"key\": \"zip\",\"value\": \"91932\"},\n"
-			+ "  {\"namespace\": \"billing_address\",\"key\": \"phone\",\"value\": \"6194297507\"},\n"
-			+ "  {\"namespace\": \"billing_address\",\"key\": \"address_id\",\"value\": \"1\"},\n" + "  \n"
-			+ "  {\"namespace\": \"method_of_payment1\",\"key\": \"type\",\"value\": \"CREDITCARD\"},\n"
-			+ "  {\"namespace\": \"method_of_payment1\",\"key\": \"id\",\"value\": 110556349, \n"
-			+ "  {\"namespace\": \"method_of_payment1\",\"key\": \"amount\",\"value\": null},\n" + "  \n"
-			+ "  {\"namespace\": \"confirm_checkout\",\"key\": \"confirmed\",\"value\": \"1\"}";
+	private String checkoutFirstList = "[\n" + 
+			"  { \"namespace\": \"place_order\", \"key\": \"place_order_experiment\", \"value\": \"true\" },\n" + 
+			"    { \"namespace\": \"shipping_address\", \"key\": \"fname\", \"value\": \"Vova\" }, \n" + 
+			"    { \"namespace\": \"shipping_address\", \"key\": \"lname\", \"value\": \"K\" }, \n" + 
+			"    { \"namespace\": \"shipping_address\", \"key\": \"line1\", \"value\": \"666 Dundee Road\" }, \n" + 
+			"    { \"namespace\": \"shipping_address\", \"key\": \"line2\", \"value\": \"\" }, \n" + 
+			"    { \"namespace\": \"shipping_address\", \"key\": \"city\", \"value\": \"Northbrook\" }, \n" + 
+			"    { \"namespace\": \"shipping_address\", \"key\": \"state\", \"value\": \"IL\" }, \n" + 
+			"    { \"namespace\": \"shipping_address\", \"key\": \"country\", \"value\": \"US\" }, \n" + 
+			"    { \"namespace\": \"shipping_address\", \"key\": \"zip\", \"value\": \"60062\" }, \n" + 
+			"    { \"namespace\": \"shipping_address\", \"key\": \"phone\", \"value\": \"5335555555\" }, \n" + 
+			"    { \"namespace\": \"shipping_address\", \"key\": \"address_id\", \"value\": \"58229368\" }, \n" + 
+			"    { \"namespace\": \"billing_address\", \"key\": \"fname\", \"value\": \"VISA\" }, \n" + 
+			"    { \"namespace\": \"billing_address\", \"key\": \"lname\", \"value\": \"\" }, \n" + 
+			"    { \"namespace\": \"billing_address\", \"key\": \"line1\", \"value\": \"Po Box 629\" }, \n" + 
+			"    { \"namespace\": \"billing_address\", \"key\": \"line2\", \"value\": \"\" }, \n" + 
+			"    { \"namespace\": \"billing_address\", \"key\": \"city\", \"value\": \"Hartford\" }, \n" + 
+			"    { \"namespace\": \"billing_address\", \"key\": \"state\", \"value\": \"CT\" }, \n" + 
+			"    { \"namespace\": \"billing_address\", \"key\": \"country\", \"value\": \"US\" }, \n" + 
+			"    { \"namespace\": \"billing_address\", \"key\": \"zip\", \"value\": \"06103\" }, \n" + 
+			"    { \"namespace\": \"billing_address\", \"key\": \"phone\", \"value\": \"5533555555\" }, \n" + 
+			"    { \"namespace\": \"billing_address\", \"key\": \"address_id\", \"value\": \"119522422\" },\n" + 
+			"  { \"namespace\": \"method_of_payment1\",  \"key\": \"type\", \"value\": \"CREDITCARD\" },\n" + 
+			"  { \"namespace\": \"method_of_payment1\", \"key\": \"id\", \"value\": 110556349 }, \n" + 
+			"  { \"namespace\": \"method_of_payment1\", \"key\": \"amount\", \"value\": null },\n" + 
+			"  {  \"namespace\": \"confirm_checkout\", \"key\": \"confirmed\", \"value\": \"1\"  }\n" + 
+			"]";
 	private String checkoutZeroList = "[  \n" + "	\"checkout_initial\", \n" + "	\"shipping_address\", \n"
 			+ "	\"calculate_item_prices_v3\",                    \n" + "	\"make_prices_consistent\",\n"
 			+ "	\"tbs_verification\",                    \n" + "	\"billing_address\", \n"
@@ -72,15 +85,14 @@ public class OrderService {
 			+ "	\"payment_authorize_v3\",\n" + "	\"assign_order_key\",                     \n"
 			+ "	\"expand_quantities\"\n" + "]";
 	private String setShippingOptions = "[\n"
-			+ "  { \"namespace\":\"shipping_choices1\", \"key\":\"option_chosen\", \"value\":\"{{shipping_choice_hash}}\" }\n"
-			+ "]";
+			+ "  { \"namespace\":\"shipping_choices1\", \"key\":\"option_chosen\", \"value\":\"";
 
 	public void zeroCheckout(BookForOrder book) throws JsonProcessingException {
-		System.out.println(postToApi(checkoutZeroList, URL_ZERO_CHECKOUT + book.getOrderId() + "/CHECKOUTV3"));
+		System.out.println(postToApiString(checkoutZeroList, URL_ZERO_CHECKOUT + book.getOrderId() + "/CHECKOUTV3"));
 	}
 
 	public void firstCheckout(BookForOrder book) throws JsonProcessingException {
-		System.out.println(postToApi(checkoutFirstList, URL_FIRST_CHECKOUT + book.getOrderId() + "/CHECKOUTV3"));
+		System.out.println(postToApiString(checkoutFirstList, URL_FIRST_CHECKOUT + book.getOrderId() + "/CHECKOUTV3"));
 	}
 
 	public String firstEvaluateCheckout(BookForOrder book) throws JsonProcessingException {
@@ -95,8 +107,8 @@ public class OrderService {
 		System.out.println(postToApi(null, URL_FIRST_EVALUATE_CHECKOUT + book.getOrderId() + "/CHECKOUTV3"));
 	}
 
-	public void setShippingOptions() throws JsonProcessingException {
-		System.out.println(postToApi(setShippingOptions + shippingChoiceHash + "}\n" + "]", URL_FIRST_CHECKOUT));
+	public void setShippingOptions(BookForOrder book) throws JsonProcessingException {
+		System.out.println(postToApiString(setShippingOptions + shippingChoiceHash + "\"}\n" + "]", URL_FIRST_CHECKOUT + book.getOrderId() + "/CHECKOUTV3"));
 	}
 
 	public Integer createOrder(BookForOrder book) throws JsonProcessingException {
@@ -148,6 +160,14 @@ public class OrderService {
 		WebResource webResource = client.resource(url);
 		ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).type(MediaType.APPLICATION_JSON)
 				.post(ClientResponse.class, jsonText);
+		
+		return response.getEntity(String.class); 
+	}
+	public String postToApiString(String body, String url) throws JsonProcessingException {
+		Client client = Client.create();
+		WebResource webResource = client.resource(url);
+		ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).type(MediaType.APPLICATION_JSON)
+				.post(ClientResponse.class, body);
 		
 		return response.getEntity(String.class); 
 	}

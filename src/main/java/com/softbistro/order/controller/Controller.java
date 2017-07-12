@@ -44,7 +44,7 @@ public class Controller {
 	
 	@RequestMapping(value = "/setShippingOpt", method = RequestMethod.POST, produces = "application/json")
 	public void setShippingOptions(@RequestBody BookForOrder book) throws JsonProcessingException {
-		service.setShippingOptions();
+		service.setShippingOptions(book);
 	}
 
 	@RequestMapping(value = "/catalog/{searchQuery}", method = RequestMethod.GET, produces = "application/json")
