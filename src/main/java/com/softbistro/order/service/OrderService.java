@@ -148,7 +148,7 @@ public class OrderService {
 			authorJsonArray = new JSONArray(jsonItem.get("authors").toString());
 			authorJsonArray.forEach(author -> authorList.add(author.toString()));
 			books.add(new Book(jsonItem.getString("id"), jsonItem.getString("title"), jsonItem.getString("isbn"),
-					jsonItem.getString("ean"), jsonItem.getString("imageUri"), authorList));
+					jsonItem.getString("ean"), jsonItem.getString("imgWidth80"), authorList));
 		}
 		return books;
 	}
