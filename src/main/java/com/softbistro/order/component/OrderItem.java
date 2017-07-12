@@ -2,7 +2,7 @@ package com.softbistro.order.component;
 
 public class OrderItem {
 
-	private Integer quatity;
+	private Integer quantity;
 	private String catalogItemSource;
 	private String pricingId;
 	private String catalogItemId;
@@ -10,19 +10,11 @@ public class OrderItem {
 	public OrderItem() {
 	}
 
-	public OrderItem(Integer quatity, String catalogItemSource, String pricingId, String catalogItemId) {
-		this.quatity = quatity;
+	public OrderItem(Integer quantity, String catalogItemSource, String pricingId, String catalogItemId) {
+		this.setQuantity(quantity);
 		this.catalogItemSource = catalogItemSource;
 		this.pricingId = pricingId;
 		this.catalogItemId = catalogItemId;
-	}
-
-	public Integer getQuatity() {
-		return quatity;
-	}
-
-	public void setQuatity(Integer quatity) {
-		this.quatity = quatity;
 	}
 
 	public String getCatalogItemSource() {
@@ -47,6 +39,14 @@ public class OrderItem {
 
 	public void setCatalogItemId(String catalogItemId) {
 		this.catalogItemId = catalogItemId;
+	}
+
+	public Integer getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(Integer quantity) {
+		this.quantity = quantity;
 	}
 
 }

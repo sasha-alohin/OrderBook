@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.core.MediaType;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,9 +24,6 @@ import com.softbistro.order.component.PriceItem;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.client.filter.GZIPContentEncodingFilter;
 
 @Service
 public class OrderService {
@@ -43,8 +42,7 @@ public class OrderService {
 	private String URL_FIRST_EVALUATE_CHECKOUT;
 
 	private String jsonText;
-	private final Integer userId = 317673305;
-	private static CatalogItem catalogItem;
+	private final Integer userId = 66132623;
 	private static Integer orderId;
 	private JSONObject jsonItem;
 	private JSONArray array;
@@ -78,48 +76,50 @@ public class OrderService {
 			+ "]";
 
 	public void zeroCheckout(BookForOrder book) throws JsonProcessingException {
-		postToApi(checkoutZeroList, URL_ZERO_CHECKOUT + book.getOrderId() + "/CHECKOUTV3");
+		System.out.println(postToApi(checkoutZeroList, URL_ZERO_CHECKOUT + book.getOrderId() + "/CHECKOUTV3"));
 	}
 
 	public void firstCheckout(BookForOrder book) throws JsonProcessingException {
-		postToApi(checkoutFirstList, URL_FIRST_CHECKOUT + book.getOrderId() + "/CHECKOUTV3");
+		System.out.println(postToApi(checkoutFirstList, URL_FIRST_CHECKOUT + book.getOrderId() + "/CHECKOUTV3"));
 	}
 
 	public String firstEvaluateCheckout(BookForOrder book) throws JsonProcessingException {
 		jsonText = postToApi(null, URL_FIRST_EVALUATE_CHECKOUT + book.getOrderId() + "/CHECKOUTV3");
 		jsonItem = new JSONObject(new JSONObject(jsonText).getJSONObject("data").toString());
 		shippingChoiceHash = jsonItem.getString("shipping_choices1.option1-hash");
+		System.out.println(shippingChoiceHash);
 		return shippingChoiceHash;
 	}
 
 	public void lastEvaluateCheckout(BookForOrder book) throws JsonProcessingException {
-		postToApi(null, URL_FIRST_EVALUATE_CHECKOUT + book.getOrderId() + "/CHECKOUTV3");
+		System.out.println(postToApi(null, URL_FIRST_EVALUATE_CHECKOUT + book.getOrderId() + "/CHECKOUTV3"));
 	}
 
 	public void setShippingOptions() throws JsonProcessingException {
-		postToApi(setShippingOptions + shippingChoiceHash + "}\n" + "]", URL_FIRST_CHECKOUT);
+		System.out.println(postToApi(setShippingOptions + shippingChoiceHash + "}\n" + "]", URL_FIRST_CHECKOUT));
 	}
 
 	public Integer createOrder(BookForOrder book) throws JsonProcessingException {
 		List<OrderItem> items = new ArrayList<>();
-		items.add(new OrderItem(1, "COPS", book.getCatalogItemId(), book.getPricingId()));
+		items.add(new OrderItem(1, "COPS", book.getPricingId(), book.getCatalogItemId()));
 		Order order = new Order(items, userId);
-		orderId = new JSONObject(postToApi(order, URL_CREATE_ORDER)).getInt("id");
+		jsonText = postToApi(order, URL_CREATE_ORDER);
+		orderId = new JSONObject(jsonText).getInt("id");
+		System.out.println(orderId);
 		return orderId;
 	}
 
 	public CatalogItem getCatalogItem(String catalogItemId) {
 		JSONObject jsonPrice;
 		jsonText = readAll(URL_GET_PRICES + catalogItemId);
-		jsonItem = new JSONObject(new JSONArray(jsonText).get(0).toString());
+		jsonItem = new JSONObject(jsonText);
 		array = new JSONArray(jsonItem.get("prices").toString());
 		List<PriceItem> prices = new ArrayList<>();
 		for (Object priceObject : array) {
 			jsonPrice = new JSONObject(priceObject.toString());
 			prices.add(new PriceItem(jsonPrice.getDouble("price"), jsonPrice.getString("logId")));
 		}
-		catalogItem = new CatalogItem(jsonItem.getString("catalogItemId"), jsonItem.getString("name"), prices);
-		return catalogItem;
+		return new CatalogItem(jsonItem.getString("catalogItemId"), jsonItem.getString("name"), prices);
 	}
 
 	public List<Book> getCatalog(String searchQuery) {
@@ -146,9 +146,10 @@ public class OrderService {
 		jsonText = mapper.writeValueAsString(object);
 		Client client = Client.create();
 		WebResource webResource = client.resource(url);
-		ClientResponse response = webResource.type("application/json").post(ClientResponse.class, jsonText);
-		String output = response.getEntity(String.class);
-		return output;
+		ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).type(MediaType.APPLICATION_JSON)
+				.post(ClientResponse.class, jsonText);
+		
+		return response.getEntity(String.class); 
 	}
 
 	/**
@@ -159,18 +160,15 @@ public class OrderService {
 	 * @return data from stream
 	 */
 	private String readAll(String url) {
-		ClientConfig config = new DefaultClientConfig();
-		Client client = Client.create(config);
-		client.addFilter(new GZIPContentEncodingFilter(false));
+		Client client = Client.create();
 		try {
 			WebResource wr = client.resource(url);
-			ClientResponse response = null;
-			response = wr.get(ClientResponse.class);
-			jsonText = response.getEntity(String.class);
+			ClientResponse response = wr.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 
+			return response.getEntity(String.class);
 		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage(), e);
 		}
-		return jsonText;
 	}
 
 	public GenericTemplate createTemplate(List<Book> books) {
