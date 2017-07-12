@@ -56,6 +56,11 @@ public class Controller {
 	public Integer createOrder(@RequestBody BookForOrder book) throws JsonProcessingException {
 		return service.createOrder(book);
 	}
+	
+	@RequestMapping(value = "/addItem", method = RequestMethod.POST, produces = "application/json")
+	public void addItem(@RequestBody BookForOrder book) throws JsonProcessingException {
+		 service.addItem(book);
+	}
 
 	@RequestMapping(value = "/prices/{catalogItemId}", method = RequestMethod.GET, produces = "application/json")
 	public CatalogItem getPrices(@PathVariable("catalogItemId") String catalogItemId) {

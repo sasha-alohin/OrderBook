@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MediaType;
 
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,41 +41,42 @@ public class OrderService {
 	private String URL_ZERO_CHECKOUT;
 	@Value("${orders.url-for-first-evaluate-checkout}")
 	private String URL_FIRST_EVALUATE_CHECKOUT;
+	@Value("${orders.url-for-add-item}")
+	private String URL_ADD_ITEM;
 
+	private static final Logger LOGGER = Logger.getLogger(OrderService.class);
 	private String jsonText;
 	private final Integer userId = 66132623;
 	private static Integer orderId;
 	private JSONObject jsonItem;
 	private JSONArray array;
-	private static String shippingChoiceHash;
 
-	private String checkoutFirstList = "[\n" + 
-			"  { \"namespace\": \"place_order\", \"key\": \"place_order_experiment\", \"value\": \"true\" },\n" + 
-			"    { \"namespace\": \"shipping_address\", \"key\": \"fname\", \"value\": \"Vova\" }, \n" + 
-			"    { \"namespace\": \"shipping_address\", \"key\": \"lname\", \"value\": \"K\" }, \n" + 
-			"    { \"namespace\": \"shipping_address\", \"key\": \"line1\", \"value\": \"666 Dundee Road\" }, \n" + 
-			"    { \"namespace\": \"shipping_address\", \"key\": \"line2\", \"value\": \"\" }, \n" + 
-			"    { \"namespace\": \"shipping_address\", \"key\": \"city\", \"value\": \"Northbrook\" }, \n" + 
-			"    { \"namespace\": \"shipping_address\", \"key\": \"state\", \"value\": \"IL\" }, \n" + 
-			"    { \"namespace\": \"shipping_address\", \"key\": \"country\", \"value\": \"US\" }, \n" + 
-			"    { \"namespace\": \"shipping_address\", \"key\": \"zip\", \"value\": \"60062\" }, \n" + 
-			"    { \"namespace\": \"shipping_address\", \"key\": \"phone\", \"value\": \"5335555555\" }, \n" + 
-			"    { \"namespace\": \"shipping_address\", \"key\": \"address_id\", \"value\": \"58229368\" }, \n" + 
-			"    { \"namespace\": \"billing_address\", \"key\": \"fname\", \"value\": \"VISA\" }, \n" + 
-			"    { \"namespace\": \"billing_address\", \"key\": \"lname\", \"value\": \"\" }, \n" + 
-			"    { \"namespace\": \"billing_address\", \"key\": \"line1\", \"value\": \"Po Box 629\" }, \n" + 
-			"    { \"namespace\": \"billing_address\", \"key\": \"line2\", \"value\": \"\" }, \n" + 
-			"    { \"namespace\": \"billing_address\", \"key\": \"city\", \"value\": \"Hartford\" }, \n" + 
-			"    { \"namespace\": \"billing_address\", \"key\": \"state\", \"value\": \"CT\" }, \n" + 
-			"    { \"namespace\": \"billing_address\", \"key\": \"country\", \"value\": \"US\" }, \n" + 
-			"    { \"namespace\": \"billing_address\", \"key\": \"zip\", \"value\": \"06103\" }, \n" + 
-			"    { \"namespace\": \"billing_address\", \"key\": \"phone\", \"value\": \"5533555555\" }, \n" + 
-			"    { \"namespace\": \"billing_address\", \"key\": \"address_id\", \"value\": \"119522422\" },\n" + 
-			"  { \"namespace\": \"method_of_payment1\",  \"key\": \"type\", \"value\": \"CREDITCARD\" },\n" + 
-			"  { \"namespace\": \"method_of_payment1\", \"key\": \"id\", \"value\": 110556349 }, \n" + 
-			"  { \"namespace\": \"method_of_payment1\", \"key\": \"amount\", \"value\": null },\n" + 
-			"  {  \"namespace\": \"confirm_checkout\", \"key\": \"confirmed\", \"value\": \"1\"  }\n" + 
-			"]";
+	private String checkoutFirstList = "[\n"
+			+ "  { \"namespace\": \"place_order\", \"key\": \"place_order_experiment\", \"value\": \"true\" },\n"
+			+ "    { \"namespace\": \"shipping_address\", \"key\": \"fname\", \"value\": \"Vova\" }, \n"
+			+ "    { \"namespace\": \"shipping_address\", \"key\": \"lname\", \"value\": \"K\" }, \n"
+			+ "    { \"namespace\": \"shipping_address\", \"key\": \"line1\", \"value\": \"666 Dundee Road\" }, \n"
+			+ "    { \"namespace\": \"shipping_address\", \"key\": \"line2\", \"value\": \"\" }, \n"
+			+ "    { \"namespace\": \"shipping_address\", \"key\": \"city\", \"value\": \"Northbrook\" }, \n"
+			+ "    { \"namespace\": \"shipping_address\", \"key\": \"state\", \"value\": \"IL\" }, \n"
+			+ "    { \"namespace\": \"shipping_address\", \"key\": \"country\", \"value\": \"US\" }, \n"
+			+ "    { \"namespace\": \"shipping_address\", \"key\": \"zip\", \"value\": \"60062\" }, \n"
+			+ "    { \"namespace\": \"shipping_address\", \"key\": \"phone\", \"value\": \"5335555555\" }, \n"
+			+ "    { \"namespace\": \"shipping_address\", \"key\": \"address_id\", \"value\": \"58229368\" }, \n"
+			+ "    { \"namespace\": \"billing_address\", \"key\": \"fname\", \"value\": \"VISA\" }, \n"
+			+ "    { \"namespace\": \"billing_address\", \"key\": \"lname\", \"value\": \"\" }, \n"
+			+ "    { \"namespace\": \"billing_address\", \"key\": \"line1\", \"value\": \"Po Box 629\" }, \n"
+			+ "    { \"namespace\": \"billing_address\", \"key\": \"line2\", \"value\": \"\" }, \n"
+			+ "    { \"namespace\": \"billing_address\", \"key\": \"city\", \"value\": \"Hartford\" }, \n"
+			+ "    { \"namespace\": \"billing_address\", \"key\": \"state\", \"value\": \"CT\" }, \n"
+			+ "    { \"namespace\": \"billing_address\", \"key\": \"country\", \"value\": \"US\" }, \n"
+			+ "    { \"namespace\": \"billing_address\", \"key\": \"zip\", \"value\": \"06103\" }, \n"
+			+ "    { \"namespace\": \"billing_address\", \"key\": \"phone\", \"value\": \"5533555555\" }, \n"
+			+ "    { \"namespace\": \"billing_address\", \"key\": \"address_id\", \"value\": \"119522422\" },\n"
+			+ "  { \"namespace\": \"method_of_payment1\",  \"key\": \"type\", \"value\": \"CREDITCARD\" },\n"
+			+ "  { \"namespace\": \"method_of_payment1\", \"key\": \"id\", \"value\": 110556349 }, \n"
+			+ "  { \"namespace\": \"method_of_payment1\", \"key\": \"amount\", \"value\": null },\n"
+			+ "  {  \"namespace\": \"confirm_checkout\", \"key\": \"confirmed\", \"value\": \"1\"  }\n" + "]";
 	private String checkoutZeroList = "[  \n" + "	\"checkout_initial\", \n" + "	\"shipping_address\", \n"
 			+ "	\"calculate_item_prices_v3\",                    \n" + "	\"make_prices_consistent\",\n"
 			+ "	\"tbs_verification\",                    \n" + "	\"billing_address\", \n"
@@ -88,27 +90,33 @@ public class OrderService {
 			+ "  { \"namespace\":\"shipping_choices1\", \"key\":\"option_chosen\", \"value\":\"";
 
 	public void zeroCheckout(BookForOrder book) throws JsonProcessingException {
-		System.out.println(postToApiString(checkoutZeroList, URL_ZERO_CHECKOUT + book.getOrderId() + "/CHECKOUTV3"));
+		LOGGER.info(postToApiString(checkoutZeroList, URL_ZERO_CHECKOUT + book.getOrderId() + "/CHECKOUTV3"));
 	}
 
 	public void firstCheckout(BookForOrder book) throws JsonProcessingException {
-		System.out.println(postToApiString(checkoutFirstList, URL_FIRST_CHECKOUT + book.getOrderId() + "/CHECKOUTV3"));
+		LOGGER.info(postToApiString(checkoutFirstList, URL_FIRST_CHECKOUT + book.getOrderId() + "/CHECKOUTV3"));
 	}
 
 	public String firstEvaluateCheckout(BookForOrder book) throws JsonProcessingException {
 		jsonText = postToApi(null, URL_FIRST_EVALUATE_CHECKOUT + book.getOrderId() + "/CHECKOUTV3");
 		jsonItem = new JSONObject(new JSONObject(jsonText).getJSONObject("data").toString());
-		shippingChoiceHash = jsonItem.getString("shipping_choices1.option1-hash");
-		System.out.println(shippingChoiceHash);
-		return shippingChoiceHash;
+		return jsonItem.getString("shipping_choices1.option1-hash");
 	}
 
 	public void lastEvaluateCheckout(BookForOrder book) throws JsonProcessingException {
-		System.out.println(postToApi(null, URL_FIRST_EVALUATE_CHECKOUT + book.getOrderId() + "/CHECKOUTV3"));
+		LOGGER.info(postToApi(null, URL_FIRST_EVALUATE_CHECKOUT + book.getOrderId() + "/CHECKOUTV3"));
 	}
 
 	public void setShippingOptions(BookForOrder book) throws JsonProcessingException {
-		System.out.println(postToApiString(setShippingOptions + shippingChoiceHash + "\"}\n" + "]", URL_FIRST_CHECKOUT + book.getOrderId() + "/CHECKOUTV3"));
+		LOGGER.info(postToApiString(setShippingOptions + book.getShippingChoiceHash() + "\"}\n" + "]",
+				URL_FIRST_CHECKOUT + book.getOrderId() + "/CHECKOUTV3"));
+	}
+
+	public void addItem(BookForOrder book) throws JsonProcessingException {
+		LOGGER.info(postToApiString(
+				"[  {    \"catalogItemId\": \"" + book.getCatalogItemId() + "\",    \"pricingId\": \""
+						+ book.getPricingId() + "\",    \"quantity\": " + book.getQuantity() + "  }]",
+				URL_ADD_ITEM + book.getOrderId()));
 	}
 
 	public Integer createOrder(BookForOrder book) throws JsonProcessingException {
@@ -117,7 +125,6 @@ public class OrderService {
 		Order order = new Order(items, userId);
 		jsonText = postToApi(order, URL_CREATE_ORDER);
 		orderId = new JSONObject(jsonText).getInt("id");
-		System.out.println(orderId);
 		return orderId;
 	}
 
@@ -160,16 +167,17 @@ public class OrderService {
 		WebResource webResource = client.resource(url);
 		ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).type(MediaType.APPLICATION_JSON)
 				.post(ClientResponse.class, jsonText);
-		
-		return response.getEntity(String.class); 
+
+		return response.getEntity(String.class);
 	}
+
 	public String postToApiString(String body, String url) throws JsonProcessingException {
 		Client client = Client.create();
 		WebResource webResource = client.resource(url);
 		ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).type(MediaType.APPLICATION_JSON)
 				.post(ClientResponse.class, body);
-		
-		return response.getEntity(String.class); 
+
+		return response.getEntity(String.class);
 	}
 
 	/**
